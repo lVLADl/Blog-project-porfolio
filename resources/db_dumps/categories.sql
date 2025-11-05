@@ -1,0 +1,11 @@
+INSERT INTO `re-start`.categories (id, title, slug) VALUES (1, 'Путешествия', 'adventures');
+INSERT INTO `re-start`.categories (id, title, slug) VALUES (2, 'Европа', 'europe');
+INSERT INTO `re-start`.categories (id, title, slug) VALUES (3, 'Советы', 'advices');
+INSERT INTO `re-start`.categories (id, title, slug) VALUES (4, 'Исландия', 'island');
+INSERT INTO `re-start`.categories (id, title, slug) VALUES (5, 'Природа', 'nature');
+INSERT INTO `re-start`.categories (id, title, slug) VALUES (6, 'Экипировка', 'equipment');
+INSERT INTO `re-start`.categories (id, title, slug) VALUES (7, 'Походы', 'trips');
+INSERT INTO `re-start`.categories (id, title, slug) VALUES (8, 'Азия', 'asia');
+INSERT INTO `re-start`.categories (id, title, slug) VALUES (9, 'Бюджет', 'budget');
+INSERT INTO `re-start`.categories (id, title, slug) VALUES (10, 'Пляжи', 'beaches');
+INSERT INTO `re-start`.categories (id, title, slug) VALUES (11, 'Отдых', 'vacations');
