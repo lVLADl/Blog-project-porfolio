@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('hero_image')->nullable();
             $table->string('hero_title')->nullable();
 
-            $table->text('body');
+            $table->text('body')->nullable();
             $table->boolean('published')->default(false);
             $table->boolean('pinned')->default(false);
             $table->timestamps();

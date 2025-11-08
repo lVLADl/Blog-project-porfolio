@@ -21,6 +21,10 @@ class ArticleController extends Controller
             'article' => $article = Article::firstWhere('slug', $slug) ?? abort(404),
             'page_title' => PageHelper::makeSeoTitle($article->title, 17)
         ];
+        if($article->itinerary) {
+            $this->context['itinerary'] = $article->itinerary;
+            return view('frontend.articles.article_itinerary', $this->context);
+        }
 
         return view('frontend.articles.default', $this->context);
     }

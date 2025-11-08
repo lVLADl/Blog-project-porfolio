@@ -11,4 +11,7 @@ class Article extends Model
     public function categories() {
         return $this->belongsToMany('App\Models\Category', 'article_category', 'article_id', 'category_id')->withTimestamps();
     }
+    public function itinerary() {
+        return $this->hasOne('App\Models\ArticleItinerary');
+    }
 }
