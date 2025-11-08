@@ -7,7 +7,7 @@
         <div class="hero-overlay"></div>
 
         <div class="hero-content">
-            <h1 class="fw-bold mb-3">Открой для себя мир / {{ $page_type }}</h1>
+            <h1 class="fw-bold mb-3">Открой для себя мир</h1>
             <p>Путешествуй, вдохновляйся и находи новые горизонты вместе с нашим блогом.</p>
         </div>
     </section>
@@ -15,8 +15,8 @@
         <section class="hero-article" style="background-image: url('https://picsum.photos/1600/800?random=21');">
             <div class="hero-content container">
                 <h1 class="fw-bold mb-3">{{ $article->hero_title }}</h1>
-    {{--            @isset($article->categories)--}}
-                @if(count($article->categories)) {
+
+                @if(count($article->categories))
                     @php
                         $category_append = 'Категории:';
                         $prev_badge_color_key = '';
@@ -28,7 +28,7 @@
                     @endphp
                     <p class="text-light mb-0">{!! $category_append !!}</p>
                 @endif
-    {{--            @endisset--}}
+
             </div>
         </section>
 @endif

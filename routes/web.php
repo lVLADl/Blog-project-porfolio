@@ -7,7 +7,7 @@ Route::get('/dev', 'App\Http\Controllers\IndexController@dev');
 
 
 Route::redirect('/articles', '/'); // ->name('articles.index');
-Route::view('article_itinerary', 'frontend.articles.article_itinerary', [])->name('articles.itinerary');
+// Route::view('article_itinerary', 'frontend.articles.article_itinerary', [])->name('articles.itinerary');
 
 
 Route::prefix('articles')->name('articles.')->group(function () {

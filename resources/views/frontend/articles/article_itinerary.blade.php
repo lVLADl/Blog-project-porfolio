@@ -98,16 +98,16 @@
             <h3>Бюджет поездки</h3>
             <table class="table table-bordered bg-white mt-3">
                 <thead>
-                <tr class="table-light">
-                    <th>Статья расходов</th>
-                    <th>Средняя стоимость</th>
-                </tr>
+                    <tr class="table-light">
+                        <th>Статья расходов</th>
+                        <th>Средняя стоимость</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr><td>Проживание (3 ночи)</td><td>€180–250</td></tr>
-                <tr><td>Питание</td><td>€60–100</td></tr>
-                <tr><td>Транспорт и музеи</td><td>€40–70</td></tr>
-                <tr><td><strong>Итого</strong></td><td><strong>около €350–420</strong></td></tr>
+                    <tr><td>Проживание (3 ночи)</td><td>€180–250</td></tr>
+                    <tr><td>Питание</td><td>€60–100</td></tr>
+                    <tr><td>Транспорт и музеи</td><td>€40–70</td></tr>
+                    <tr><td><strong>Итого</strong></td><td><strong>около €350–420</strong></td></tr>
                 </tbody>
             </table>
 
@@ -128,37 +128,7 @@
             <a href="#" class="btn btn-outline-primary">Следующая статья &rarr;</a>
         </div>
 
-        {{-- COMMENTS SECTION --}}
-        <section id="comments" class="mt-5">
-            <h4 class="mb-4">Комментарии</h4>
-
-            <div id="comment-list">
-                <div class="comment">
-                    <strong>Алексей</strong>
-                    <p>Отличная статья! Бывал в Карпатах — согласен, место волшебное.</p>
-                </div>
-                <div class="comment">
-                    <strong>Марина</strong>
-                    <p>Спасибо за советы! В этом году как раз планирую поездку 😊</p>
-                </div>
-            </div>
-
-            {{-- COMMENT FORM --}}
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Оставить комментарий</h5>
-                    <form id="comment-form">
-                        <div class="mb-3">
-                            <input type="text" class="form-control" id="name" placeholder="Ваше имя" required>
-                        </div>
-                        <div class="mb-3">
-                            <textarea class="form-control" id="message" rows="3" placeholder="Ваш комментарий..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Отправить</button>
-                    </form>
-                </div>
-            </div>
-        </section>
+        @include('frontend.layout.__article_comments')
 
     </main>
 @endsection

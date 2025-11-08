@@ -23,8 +23,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-@if($page_type == 'article-default')
-    @include('__article_comments')
+@if($page_type === 'article')
+    <script src="{{ asset('/js/article_comments.js') }}"></script>
 @endif
 @yield('script')
 
