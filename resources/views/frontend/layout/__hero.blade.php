@@ -1,9 +1,11 @@
 @if($page_type === 'index')
     <section class="hero">
-        <div class="hero-bg active" style="background-image: url('https://picsum.photos/1600/800?random=11');"></div>
-        <div class="hero-bg" style="background-image: url('https://picsum.photos/1600/800?random=12');"></div>
-        <div class="hero-bg" style="background-image: url('https://picsum.photos/1600/800?random=13');"></div>
-
+        @php
+            $first_active_is_set = false;
+        @endphp
+        @foreach($slider as $slider_img)
+            <div class="hero-bg{{ !$first_active_is_set ? " active" : "" }}" style="background-image: url('{{ Storage::url($slider_img['hero_image']) }}')"></div>
+        @endforeach
         <div class="hero-overlay"></div>
 
         <div class="hero-content">
@@ -12,7 +14,11 @@
         </div>
     </section>
 @elseif($page_type === 'article' && isset($article->categories))
-        <section class="hero-article" style="background-image: url('https://picsum.photos/1600/800?random=21');">
+    @php
+        $hero_img = ($hero_src=$article->hero_image) ? Storage::url($hero_src) : "https://picsum.photos/1600/800?random=21";
+        $hero_background_style = "background-image: url('$hero_img')";
+    @endphp
+        <section class="hero-article" style="{{ $hero_background_style }}">
             <div class="hero-content container">
                 <h1 class="fw-bold mb-3">{{ $article->hero_title }}</h1>
 

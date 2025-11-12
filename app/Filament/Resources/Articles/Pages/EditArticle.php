@@ -154,6 +154,7 @@ class EditArticle extends EditRecord
                                                         ->disk('public')
                                                         ->visibility('public')
                                                         ->image()
+                                                        ->imageEditor()
                                                         ->imagePreviewHeight('120')
                                                         ->helperText('Загрузите изображение для этого дня'),
                                                 ]),

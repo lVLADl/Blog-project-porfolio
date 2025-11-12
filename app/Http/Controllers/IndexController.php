@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class IndexController extends Controller
 {
+    protected static $pagination_per_page = 6;
     public function __construct()
     {
         parent::__construct();
@@ -17,15 +18,26 @@ class IndexController extends Controller
     }
 
     public function index(Request $request) {
-        $pinned_collection = Article::where('pinned', true)
-                            ->where('published', 1)
-                            ->orderBy('created_at', 'asc')->get();
+        $articles = Article::where('published', 1)
+            ->orderBy('pinned', 'desc')
+            ->orderBy('created_at', 'desc');
 
-        $main_collection = Article::where('published', 1)
-            ->orWhere('pinned', true)
-            ->orderBy('created_at', 'desc')/*->limit(9)*/->get();
+        $this->context['slider'] = $slider = $articles->whereNotNull('hero_image')->inRandomOrder()->take(3)->get(['hero_image']);
 
-        $this->context['articles'] = $pinned_collection->concat($main_collection)->unique();
+        $per_page = static::$pagination_per_page;
+        $this->context['pagination_page'] = $pagination_page = $request->input('page', 1);
+        $this->context['pagination_page_count']  = ceil($articles->count() / $per_page);
+        $offset = ($pagination_page - 1) * $per_page;
+
+        if ( $pagination_page > $this->context['pagination_page_count'] ) {
+            return redirect()->route('index');
+        }
+
+        $this->context['articles'] = $articles
+            ->skip($offset)
+            ->take($per_page)
+            ->get();
+
         return view('frontend.index', $this->context);
     }
     public function dev(Request $request) {

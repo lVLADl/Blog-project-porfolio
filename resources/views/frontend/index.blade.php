@@ -1,4 +1,4 @@
-@extends('frontend.layout.layout', ['hero_imgs' => []])
+@extends('frontend.layout.layout', [])
 @section('styles')
     <style>
         body {
@@ -129,11 +129,21 @@
         <div class="d-flex justify-content-center mt-5">
             <nav>
                 <ul class="pagination">
-                    <li class="page-item disabled"><a class="page-link">Предыдущая</a></li>
-                    <li class="page-item active"><a class="page-link" href="#" data-page="1">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#" data-page="2">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#" data-page="3">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#" data-page="2">Следующая</a></li>
+                    @php
+                        $is_prev = $pagination_page > 1;
+                        $prev = ($pagination_page - 1);
+
+                        $is_next = $pagination_page < $pagination_page_count;
+                        $next = $pagination_page + 1;
+                    @endphp
+                    <li class="page-item{{ (!$is_prev) ? ' disabled' : '' }}"><a class="page-link" href="{{ ($is_prev) ? (route('index', ['page' => $prev])) : '#' }}" {{ ($is_prev) ? "data-page=\"$prev\"" : '' }}>Предыдущая</a></li>
+                    @for ($i = 1; $i <= $pagination_page_count; $i++)
+                        @php
+                            $pagination_page_is_active = ($pagination_page == $i);
+                        @endphp
+                        <li class="page-item{{ $pagination_page_is_active ? ' active' : '' }}"><a class="page-link" href="{{ route('index', ['page' => $i]) }}" data-page="{{ $i }}">{{ $i }}</a></li>
+                    @endfor()
+                    <li class="page-item{{ (!$is_next) ? ' disabled' : '' }}"><a class="page-link" href="{{ ($is_next) ? (route('index', ['page' => $next])) : '#' }}" {{ ($is_next) ? "data-page=\"$next\"" : '' }}>Следующая</a></li>
                 </ul>
             </nav>
         </div>
@@ -149,34 +159,5 @@
             current = (current + 1) % slides.length;
             slides[current].classList.add('active');
         }, 7000);
-
-        // ==== AJAX PAGINATION TEMPLATE ====
-        document.addEventListener('DOMContentLoaded', function () {
-            const paginationLinks = document.querySelectorAll('.pagination .page-link');
-            const postList = document.getElementById('post-list');
-            const loader = document.getElementById('loader');
-
-            paginationLinks.forEach(link => {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const page = this.getAttribute('data-page');
-                    if (!page) return;
-
-                    loader.style.display = 'block';
-                    postList.classList.remove('show');
-
-                    setTimeout(() => {
-                        postList.innerHTML = `
-                        <div class="col-md-12 text-center py-5">
-                            <h5 class="text-muted">Страница ${page} загружена (AJAX-заготовка)</h5>
-                        </div>
-                    `;
-                        loader.style.display = 'none';
-                        setTimeout(() => postList.classList.add('show'), 100);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }, 1000);
-                });
-            });
-        });
     </script>
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Articles\Tables;
 
+use App\Models\Article;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -16,19 +17,44 @@ class ArticlesTable
     {
         return $table
             ->columns([
+                ImageColumn::make('hero_image'),
                 TextColumn::make('slug')
                     ->searchable(),
-                IconColumn::make('pinned')
-                    ->boolean(),
-                IconColumn::make('published')
-                    ->boolean(),
                 TextColumn::make('title')
                     ->searchable(),
-                TextColumn::make('description')
-                    ->searchable(),
-                ImageColumn::make('hero_image'),
-                TextColumn::make('hero_title')
-                    ->searchable(),
+                // 💡 Виртуальная колонка
+                TextColumn::make('type_label')
+                    ->label('Type')
+                    ->sortable(false)
+                    // ->badge()
+                    /* ->color(fn (string $state): string => match ($state) {
+                        '📝 Blog Article' => 'info',
+                        '📘 Travel Guide' => 'success',
+                        '🧭 Itinerary' => 'warning',
+                        default => 'gray',
+                    }), */
+                    ->getStateUsing(function (Article $article) {
+                        $type = $article->itinerary ? 'itinerary' : 'default';
+                        return $type;
+                    })
+                    ->formatStateUsing(function ($state, $record) {
+                        return match ($state) {
+                            'default' => '📝 Blog Article',
+                            'itinerary' => '🧭 Itinerary',
+                            // 'guide' => '📘 Travel Guide',
+                            default => '❓ Unknown',
+                        };
+                    }),
+                TextColumn::make('comments')
+                    ->label('Comments*')
+                    // ->sortable()
+                    ->getStateUsing(fn (Article $article) => $article->comments?->count() . ' comments'),
+                IconColumn::make('pinned')
+                    ->boolean()
+                    ->sortable(),
+                IconColumn::make('published')
+                    ->boolean()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

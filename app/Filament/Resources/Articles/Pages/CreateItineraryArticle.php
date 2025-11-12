@@ -136,6 +136,7 @@ class CreateItineraryArticle extends CreateRecord
                                                 ->label('Alt text'),
                                             Forms\Components\FileUpload::make('image.src')
                                                 ->image()
+                                                ->imageEditor()
                                                 ->directory('articles/temp/itinerary')
                                                 ->disk('public')
                                                 ->visibility('public'),

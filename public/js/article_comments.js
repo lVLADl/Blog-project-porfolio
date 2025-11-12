@@ -24,10 +24,14 @@ document.getElementById('comment-form').addEventListener('submit', async functio
 
         // Добавляем комментарий в DOM только после успешного ответа сервера
         const commentList = document.getElementById('comment-list');
+        const commentListHeader = document.getElementById('comment-list-header');
         const newComment = document.createElement('div');
         newComment.classList.add('comment');
         newComment.innerHTML = `<strong>${data.user_name}</strong><p>${data.comment}</p>`;
         commentList.append(newComment);
+
+        // commentList.style.setProperty('display', 'block', 'important');
+        // commentListHeader.style.setProperty('display', 'block', 'important');
 
         // Очистить форму
         this.reset();

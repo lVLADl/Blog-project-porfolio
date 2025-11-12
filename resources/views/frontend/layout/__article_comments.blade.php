@@ -1,16 +1,17 @@
 {{-- COMMENTS SECTION --}}
 <section id="comments" class="mt-5">
-    @if($article->comments->isNotEmpty())
-        <h4 class="mb-4">Комментарии</h4>
-        <div id="comment-list">
-            @foreach($article->comments as $comment)
-                <div class="comment">
-                    <strong>{{ $comment->user_name }}</strong>
-                    <p>{{ $comment->comment }}</p>
-                </div>
-            @endforeach
-        </div>
-    @endif
+    @php
+        // $comments_visibility = ($article->comments->isEmpty()) ? 'none' : 'block';
+    @endphp
+    <h4 id="comment-list-header" class="mb-4" >Комментарии</h4>
+    <div id="comment-list" >
+        @foreach($article->comments as $comment)
+            <div class="comment">
+                <strong>{{ $comment->user_name }}</strong>
+                <p>{{ $comment->comment }}</p>
+            </div>
+        @endforeach
+    </div>
 
     {{-- COMMENT FORM --}}
     <div class="card mt-4">

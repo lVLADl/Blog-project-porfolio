@@ -1,7 +1,4 @@
 {{-- ================= ARTICLE BODY ================= --}}
-
-
-
 @extends('frontend.layout.layout', ['hero_imgs' => []])
 @section('styles')
     <style>
@@ -70,13 +67,14 @@
     <main class="container my-5">
         <article class="article-content">
 
-            <p class="lead">Париж — город, в который невозможно не влюбиться.
-                Мы подготовили лёгкий, но насыщенный маршрут на 3 дня, чтобы вы увидели всё самое главное — и успели насладиться атмосферой.</p>
+            <p class="lead">{!! $itinerary->intro ?? '' !!}</p>
 
+            @if(!empty($itinerary->map_url))
             <div class="map-frame">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d41993.42191727492!2d2.3123243380232185!3d48.85661401366082!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e29604c9b03%3A0xa0b82c3688b7aa0!2zUGFyaXM!5e0!3m2!1sru!2sua!4v1730550000000"
+                <iframe src="{{ $itinerary->map_url }}"
                         width="100%" height="400" style="border:0;" allowfullscreen loading="lazy"></iframe>
             </div>
+            @endif
 
             @foreach ($itinerary->itinerary_days['itinerary'] as $day)
                 <div class="day-block">
@@ -86,41 +84,46 @@
                             <li>{!! $activity !!}</li>
                         @endforeach
                     </ul>
-                    <img src="{{ $day['image']['src'] }}" alt="{{ $day['image']['alt'] }}" class="img-fluid">
+                    @if(isset($day['image']['src']))
+                        @php
+                            $itinerary_day_img_src = Storage::url($day['image']['src']);
+                            $itinerary_day_img_alt = $day['image']['alt'] ?? '';
+                        @endphp
+                        <img src="{{ $itinerary_day_img_src }}" alt="{{ $itinerary_day_img_alt }}" class="img-fluid">
+                    @endif
+                    @if(!empty($day['tip']))
+                        <div class="tip-box">
+                            {!! $day['tip'] !!}
+                        </div>
+                    @endif
                 </div>
-                @if(!empty($day['tip']))
-                    <div class="tip-box">
-                        {!! $day['tip'] !!}
-                    </div>
-                @endif
             @endforeach
 
-            <h3>Бюджет поездки</h3>
-            <table class="table table-bordered bg-white mt-3">
-                <thead>
+            @if($itinerary->trip_budget)
+                <h3>Бюджет поездки</h3>
+                <table class="table table-bordered bg-white mt-3">
+                    <thead>
                     <tr class="table-light">
                         <th>Статья расходов</th>
                         <th>Средняя стоимость</th>
                     </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Проживание (3 ночи)</td><td>€180–250</td></tr>
-                    <tr><td>Питание</td><td>€60–100</td></tr>
-                    <tr><td>Транспорт и музеи</td><td>€40–70</td></tr>
-                    <tr><td><strong>Итого</strong></td><td><strong>около €350–420</strong></td></tr>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($itinerary->trip_budget['table']['rows'] as $budget)
+                            <tr><td>{!! $budget['Статья расходов'] ?? '' !!}</td><td>{!! $budget['Средняя стоимость'] ?? '' !!}</td></tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                @if(!empty($itinerary->trip_budget_advice))
+                    <div class="tip-box">
+                        {!! $itinerary->trip_budget_advice !!}
+                    </div>
+                @endif
+            @endif
 
-            <div class="tip-box">
-                🎫 <strong>Факт:</strong> Если планируете активно посещать музеи, купите <em>Paris Museum Pass</em> — это сэкономит деньги и время.
-            </div>
-
-            <h3>Итоги</h3>
-            <p>За три дня вы увидите всё главное, почувствуете атмосферу и, возможно, захотите вернуться.
-                Париж не отпускает — он просто ждёт вашего следующего визита.</p>
-
+            <h3>{{ $itinerary->results_title }}</h3>
+            <p>{{ $itinerary->results_description }}</p>
         </article>
-        {!! '' // $article->body !!}
 
         {{-- ARTICLE NAVIGATION --}}
         <div class="article-nav d-flex justify-content-between align-items-center mt-5">
