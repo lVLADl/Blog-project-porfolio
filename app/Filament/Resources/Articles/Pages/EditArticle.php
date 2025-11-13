@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Articles\Pages;
 
 use App\Filament\Resources\Articles\ArticleResource;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Forms;
@@ -11,6 +12,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EditArticle extends EditRecord
 {
@@ -18,24 +20,35 @@ class EditArticle extends EditRecord
 
     public function form(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
-        // $type = $this->record?->type ?? 'default';
         $type = $this->record?->itinerary ? 'itinerary' : 'default';
         $default_schema = [
-            // Внешняя сетка на 12 колонок — даёт точный контроль ширины
             Grid::make()->schema([
-
-                // === ЛЕВАЯ КОЛОНКА (основной контент) ===
                 Group::make()->schema([
-
                     Section::make('Basic Info')
                         ->schema([
                             Forms\Components\TextInput::make('slug')
                                 ->label('Slug')
-                                ->prefix('http://re-start-x2/articles/')
-                                ->suffix('.com')
+                                 ->prefix('http://re-start-x2/articles/' . $this->record->id . '-')
+                                // ->suffix('.com')
+                                ->suffixAction(
+                                    Action::make('generateSlug')
+                                        ->label('Generate')
+                                        ->button()
+                                        ->action(function ($livewire, callable $set) {
+                                            $title = $livewire->data['title'] ?? null;
+                                            if ($title) {
+                                                $set('slug', \Str::slug($title));
+                                            }
+                                        })
+                                )
                                 ->required(),
                             Forms\Components\TextInput::make('title')
                                 ->label('Index Page Title')
+                                ->reactive()
+                                ->debounce(800)
+                                ->afterStateUpdated(fn ($state, callable $set) =>
+                                    $set('slug', Str::slug($state))
+                                )
                                 ->required(),
                             Forms\Components\Textarea::make('description')
                                 ->label('Index Page Description')
@@ -62,23 +75,37 @@ class EditArticle extends EditRecord
                     ...(($type === 'default') ? [Section::make('Content')
                         ->schema([
                             Forms\Components\RichEditor::make('body')
+                                ->toolbarButtons([
+                                    ['bold',
+                                        'italic',
+                                        'underline',
+                                        'strike',
+                                        'subscript',
+                                        'superscript',
+                                        'h2',
+                                        'h3',
+                                        'bulletList',
+                                        'orderedList',
+                                        'link',
+                                        'blockquote',],
+                                    // 'horizontalRule',
+                                    'attachFiles',
+                                    'undo',
+                                    'redo'
+                                ])
                                 ->fileAttachmentsDisk('public')            // какой диск использовать для хранения изображений
                                 ->fileAttachmentsDirectory(fn ($record) => "articles/{$record->id}/body") // директория внутри диска
                                 ->fileAttachmentsVisibility('public')      // публичная или приватная видимость
                                 ->label('Body'),
                         ])] : []),
                 ])
-                    // ширина колонки: на больших экранах 8/12, на средних и ниже — 12/12
                     ->columnSpan([
                         'lg' => 8,
                         'md' => 12,
                     ]),
-
-                // === ПРАВАЯ КОЛОНКА (сайдбар) ===
                 Group::make()->schema([
-
                     Section::make('Status')
-                        ->compact() // меньше внутренних отступов, чтобы всё уместилось
+                        ->compact()
                         ->schema([
                             Forms\Components\Toggle::make('published')
                                 ->label('Published')
@@ -100,7 +127,6 @@ class EditArticle extends EditRecord
                                 ->relationship('categories', 'title'),
                         ]),
                 ])
-                    // ширина сайдбара: 4/12 на больших экранах
                     ->columnSpan([
                         'lg' => 8,
                         'md' => 12,
@@ -195,12 +221,6 @@ class EditArticle extends EditRecord
                                 ]),
                         ])
                 ],
-
-                /* 'news' => [
-                    Forms\Components\TextInput::make('title')->label('Headline')->required(),
-                    Forms\Components\FileUpload::make('image')->label('Photo'),
-                    Forms\Components\Textarea::make('body')->label('News Content')->required(),
-                ], */
 
                 default => $default_schema,
             });

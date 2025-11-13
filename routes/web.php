@@ -11,7 +11,7 @@ Route::redirect('/articles', '/'); // ->name('articles.index');
 
 
 Route::prefix('articles')->name('articles.')->group(function () {
-    Route::get('/{slug}', 'App\Http\Controllers\ArticleController@show')->name('show');
+    Route::get('/{id}-{slug}', 'App\Http\Controllers\ArticleController@show')->name('show');
 
     // Пример AJAX-запроса для подгрузки статей
     // Route::get('/ajax/articles', [TravelController::class, 'ajaxArticles'])->name('ajax');

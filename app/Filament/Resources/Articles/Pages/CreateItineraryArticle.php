@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Articles\Pages;
 
 use App\Filament\Resources\Articles\ArticleResource;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
@@ -11,6 +12,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Forms;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CreateItineraryArticle extends CreateRecord
 {
@@ -27,11 +29,27 @@ class CreateItineraryArticle extends CreateRecord
                         ->schema([
                             Forms\Components\TextInput::make('slug')
                                 ->label('Slug')
-                                ->prefix('https://re-start-x2/articles/')
-                                ->suffix('.com')
+                                // ->prefix('https://re-start-x2/articles/')
+                                // ->suffix('.com')
+                                ->suffixAction(
+                                    Action::make('generateSlug')
+                                        ->label('Generate')
+                                        ->button()
+                                        ->action(function ($livewire, callable $set) {
+                                            $title = $livewire->data['title'] ?? null;
+                                            if ($title) {
+                                                $set('slug', \Str::slug($title));
+                                            }
+                                        })
+                                )
                                 ->required(),
                             Forms\Components\TextInput::make('title')
                                 ->label('Index Page Title')
+                                ->reactive()
+                                ->debounce(800)
+                                ->afterStateUpdated(fn ($state, callable $set) =>
+                                    $set('slug', Str::slug($state))
+                                )
                                 ->required(),
                             Forms\Components\Textarea::make('description')
                                 ->label('Index Page Description')

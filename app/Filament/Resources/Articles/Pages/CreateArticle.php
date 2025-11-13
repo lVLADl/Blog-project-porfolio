@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Articles\Pages;
 
 use App\Filament\Resources\Articles\ArticleResource;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -27,11 +28,27 @@ class CreateArticle extends CreateRecord
                         ->schema([
                             Forms\Components\TextInput::make('slug')
                                 ->label('Slug')
-                                ->prefix('https://re-start-x2/articles/')
-                                ->suffix('.com')
+                                // ->prefix('https://re-start-x2/articles/')
+                                // ->suffix('.com')
+                                ->suffixAction(
+                                    Action::make('generateSlug')
+                                        ->label('Generate')
+                                        ->button()
+                                        ->action(function ($livewire, callable $set) {
+                                            $title = $livewire->data['title'] ?? null;
+                                            if ($title) {
+                                                $set('slug', \Str::slug($title));
+                                            }
+                                        })
+                                )
                                 ->required(),
                             Forms\Components\TextInput::make('title')
                                 ->label('Index Page Title')
+                                ->reactive()
+                                ->debounce(800)
+                                ->afterStateUpdated(fn ($state, callable $set) =>
+                                    $set('slug', Str::slug($state))
+                                )
                                 ->required(),
                             Forms\Components\Textarea::make('description')
                                 ->label('Index Page Description')
@@ -58,6 +75,25 @@ class CreateArticle extends CreateRecord
                     Section::make('Content')
                         ->schema([
                             Forms\Components\RichEditor::make('body')
+                                ->toolbarButtons([
+                                    ['bold',
+                                    'italic',
+                                    'underline',
+                                    'strike',
+                                    'subscript',
+                                    'superscript',
+                                    'h2',
+                                    'h3',
+                                    'bulletList',
+                                    'orderedList',
+                                    'link',
+                                    'blockquote',],
+                                    // 'codeBlock',
+                                    // 'horizontalRule',
+                                    'attachFiles',
+                                    'undo',
+                                    'redo'
+                                ])
                                 ->fileAttachmentsDisk('public')            // какой диск использовать для хранения изображений
                                 ->fileAttachmentsDirectory("/articles/temp/body") // директория внутри диска
                                 ->fileAttachmentsVisibility('public')      // публичная или приватная видимость
@@ -98,7 +134,7 @@ class CreateArticle extends CreateRecord
                 ])
                     // ширина сайдбара: 4/12 на больших экранах
                     ->columnSpan([
-                        'lg' => 8,
+                        'lg' => 4,
                         'md' => 12,
                     ]),
                 ]),

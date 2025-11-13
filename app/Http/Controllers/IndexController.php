@@ -22,7 +22,7 @@ class IndexController extends Controller
             ->orderBy('pinned', 'desc')
             ->orderBy('created_at', 'desc');
 
-        $this->context['slider'] = $slider = $articles->whereNotNull('hero_image')->inRandomOrder()->take(3)->get(['hero_image']);
+        $this->context['slider'] = $slider = Article::where('published', 1)->whereNotNull('hero_image')->inRandomOrder()->take(3)->get(['hero_image']);
 
         $per_page = static::$pagination_per_page;
         $this->context['pagination_page'] = $pagination_page = $request->input('page', 1);

@@ -3,7 +3,7 @@
         @php
             $first_active_is_set = false;
         @endphp
-        @foreach($slider as $slider_img)
+        @foreach($slider ?? [] as $slider_img)
             <div class="hero-bg{{ !$first_active_is_set ? " active" : "" }}" style="background-image: url('{{ Storage::url($slider_img['hero_image']) }}')"></div>
         @endforeach
         <div class="hero-overlay"></div>
@@ -15,8 +15,17 @@
     </section>
 @elseif($page_type === 'article' && isset($article->categories))
     @php
-        $hero_img = ($hero_src=$article->hero_image) ? Storage::url($hero_src) : "https://picsum.photos/1600/800?random=21";
-        $hero_background_style = "background-image: url('$hero_img')";
+        /* TODO: заменить на проверку соответствия url- "этого" сайта; 'если hero_img - не с этого сайта: не используй Storage::url(...)'*/
+        /* if($hero_src=$article->hero_image) {
+            $hero_img =
+                !\App\Helpers\StrHelper::glob_match('*://picsum.photos/*', $hero_src) ?
+                    Storage::url($hero_src) : $hero_src;
+        }
+        else {
+            // $hero_img = "https://picsum.photos/1600/800?random=21";
+            $hero_img = \App\Helpers\PageHelper::$image_placeholder;
+        } */
+            $hero_background_style = "background-image: url('$article->hero_image_url')";
     @endphp
         <section class="hero-article" style="{{ $hero_background_style }}">
             <div class="hero-content container">

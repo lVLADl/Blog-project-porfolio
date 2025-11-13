@@ -16,9 +16,9 @@ class ArticleController extends Controller
     }
 
     # puteshestvie-po-karpatam-magiya-gor-i-prirody
-    public function show(Request $request, $slug) {
+    public function show(Request $request, $id, $slug) {
         $this->context += [
-            'article' => $article = Article::firstWhere('slug', $slug) ?? abort(404),
+            'article' => $article = Article::firstWhere('id', $id) ?? abort(404),
             'page_title' => PageHelper::makeSeoTitle($article->title, 17)
         ];
         if($article->itinerary) {

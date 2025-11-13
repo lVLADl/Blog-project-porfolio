@@ -96,7 +96,7 @@
             @foreach ($articles as $post)
                 <div class="col-md-6 col-lg-4">
                     <div class="card h-100 shadow-sm border-0">
-                        <img src="{{ $post->hero_image }}" class="card-img-top" alt="Изображение статьи">
+                        <img src="{{ $post->hero_image_url }}" class="card-img-top" alt="Изображение статьи">
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">{{ $post->title }}</h5>
                             <div class="mb-2">
@@ -112,7 +112,7 @@
                                 @endisset
                             </div>
                             <p class="card-text text-muted mb-4">{{ $post->description }}</p>
-                            <a href="{{ route('articles.show', ['slug' => $post->slug]) }}" class="mt-auto btn btn-outline-primary btn-sm w-100">Читать далее</a>
+                            <a href="{{ route('articles.show', ['id' => $post->id, 'slug' => $post->slug]) }}" class="mt-auto btn btn-outline-primary btn-sm w-100">Читать далее</a>
                         </div>
                     </div>
                 </div>
