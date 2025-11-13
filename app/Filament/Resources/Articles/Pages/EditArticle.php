@@ -11,6 +11,7 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -21,208 +22,317 @@ class EditArticle extends EditRecord
     public function form(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         $type = $this->record?->itinerary ? 'itinerary' : 'default';
-        $default_schema = [
-            Grid::make()->schema([
-                Group::make()->schema([
-                    Section::make('Basic Info')
+        $default_schema_ad = [
+            Tabs::make('Default Layout')
+                ->tabs([
+                    Tabs\Tab::make('Основное')
                         ->schema([
-                            Forms\Components\TextInput::make('slug')
-                                ->label('Slug')
-                                 ->prefix('http://re-start-x2/articles/' . $this->record->id . '-')
-                                // ->suffix('.com')
-                                ->suffixAction(
-                                    Action::make('generateSlug')
-                                        ->label('Generate')
-                                        ->button()
-                                        ->action(function ($livewire, callable $set) {
-                                            $title = $livewire->data['title'] ?? null;
-                                            if ($title) {
-                                                $set('slug', \Str::slug($title));
-                                            }
-                                        })
-                                )
-                                ->required(),
-                            Forms\Components\TextInput::make('title')
-                                ->label('Index Page Title')
-                                ->reactive()
-                                ->debounce(800)
-                                ->afterStateUpdated(fn ($state, callable $set) =>
-                                    $set('slug', Str::slug($state))
-                                )
-                                ->required(),
-                            Forms\Components\Textarea::make('description')
-                                ->label('Index Page Description')
-                                ->autosize()
-                                ->required(),
-                        ])
-                        ->columns(0),
-
-                    Section::make('Hero Section')
-                        ->schema([
-                            Forms\Components\TextInput::make('hero_title')
-                                ->label('Hero Title'),
-                            Forms\Components\FileUpload::make('hero_image')
-                                ->label('Hero Image')
-                                ->disk('public')
-                                ->visibility('public')
-                                ->directory(fn ($record) => "articles/{$record->id}/hero") # '/articles/hero_image'
-                                ->image()
-                                ->imageEditor()
-                                ->maxSize(4096),
-                        ])
-                        ->columns(1),
-
-                    ...(($type === 'default') ? [Section::make('Content')
-                        ->schema([
-                            Forms\Components\RichEditor::make('body')
-                                ->toolbarButtons([
-                                    ['bold',
-                                        'italic',
-                                        'underline',
-                                        'strike',
-                                        'subscript',
-                                        'superscript',
-                                        'h2',
-                                        'h3',
-                                        'bulletList',
-                                        'orderedList',
-                                        'link',
-                                        'blockquote',],
-                                    // 'horizontalRule',
-                                    'attachFiles',
-                                    'undo',
-                                    'redo'
+                            Section::make('Basic Info')
+                                ->schema([
+                                    Forms\Components\TextInput::make('slug')
+                                        ->label('Slug')
+                                        ->prefix('http://re-start-x2/articles/' . $this->record->id . '-')
+                                        // ->suffix('.com')
+                                        ->suffixAction(
+                                            Action::make('generateSlug')
+                                                ->label('Generate')
+                                                ->button()
+                                                ->action(function ($livewire, callable $set) {
+                                                    $title = $livewire->data['title'] ?? null;
+                                                    if ($title) {
+                                                        $set('slug', \Str::slug($title));
+                                                    }
+                                                })
+                                        )
+                                        ->required(),
+                                    Forms\Components\TextInput::make('title')
+                                        ->label('Index Page Title')
+                                        ->reactive()
+                                        ->debounce(800)
+                                        ->afterStateUpdated(fn ($state, callable $set) =>
+                                        $set('slug', Str::slug($state))
+                                        )
+                                        ->required(),
+                                    Forms\Components\Textarea::make('description')
+                                        ->label('Index Page Description')
+                                        ->autosize()
+                                        ->required(),
                                 ])
-                                ->fileAttachmentsDisk('public')            // какой диск использовать для хранения изображений
-                                ->fileAttachmentsDirectory(fn ($record) => "articles/{$record->id}/body") // директория внутри диска
-                                ->fileAttachmentsVisibility('public')      // публичная или приватная видимость
-                                ->label('Body'),
-                        ])] : []),
-                ])
-                    ->columnSpan([
-                        'lg' => 8,
-                        'md' => 12,
-                    ]),
-                Group::make()->schema([
-                    Section::make('Status')
-                        ->compact()
-                        ->schema([
-                            Forms\Components\Toggle::make('published')
-                                ->label('Published')
-                                ->default(true),
-                            Forms\Components\Toggle::make('pinned')
-                                ->label('Pinned'),
-                        ])
-                        ->columns(1),
+                                ->columns(0),
 
-                    Section::make('Tags')
-                        ->compact()
+                            Section::make('Hero Section')
+                                ->schema([
+                                    Forms\Components\TextInput::make('hero_title')
+                                        ->label('Hero Title'),
+                                    Forms\Components\FileUpload::make('hero_image')
+                                        ->label('Hero Image')
+                                        ->disk('public')
+                                        ->visibility('public')
+                                        ->directory(fn ($record) => "articles/{$record->id}/hero") # '/articles/hero_image'
+                                        ->image()
+                                        ->imageEditor()
+                                        ->maxSize(4096),
+                                ])
+                                ->columns(1),
+                        ]),
+
+                    Tabs\Tab::make('Body')
                         ->schema([
-                            Forms\Components\Select::make('categories')
-                                ->label('Categories')
-                                ->multiple()
-                                ->preload()
-                                ->searchable()
-                                ->native(false)
-                                ->relationship('categories', 'title'),
+                            ...(($type === 'default') ? [Section::make('Content')
+                                ->schema([
+                                    Forms\Components\RichEditor::make('body')
+                                        ->toolbarButtons([
+                                            ['bold',
+                                                'italic',
+                                                'underline',
+                                                'strike',
+                                                'subscript',
+                                                'superscript',
+                                                'h2',
+                                                'h3',
+                                                'bulletList',
+                                                'orderedList',
+                                                'link',
+                                                'blockquote',],
+                                            // 'horizontalRule',
+                                            'attachFiles',
+                                            'undo',
+                                            'redo'
+                                        ])
+                                        ->fileAttachmentsDisk('public')            // какой диск использовать для хранения изображений
+                                        ->fileAttachmentsDirectory(fn ($record) => "articles/{$record->id}/body") // директория внутри диска
+                                        ->fileAttachmentsVisibility('public')      // публичная или приватная видимость
+                                        ->label('Body'),
+                                ])] : []),
+                        ]),
+
+                    Tabs\Tab::make('SEO')
+                        ->schema([
+                            Section::make('Status')
+                                ->compact()
+                                ->schema([
+                                    Forms\Components\Toggle::make('published')
+                                        ->label('Published')
+                                        ->default(true),
+                                    Forms\Components\Toggle::make('pinned')
+                                        ->label('Pinned'),
+                                ])
+                                ->columns(1),
+
+                            Section::make('Tags')
+                                ->compact()
+                                ->schema([
+                                    Forms\Components\Select::make('categories')
+                                        ->label('Categories')
+                                        ->multiple()
+                                        ->preload()
+                                        ->searchable()
+                                        ->native(false)
+                                        ->relationship('categories', 'title'),
+                                ]),
                         ]),
                 ])
-                    ->columnSpan([
-                        'lg' => 8,
-                        'md' => 12,
-                    ]),
-            ]),
+                ->columnSpanFull(),
+        ];
+        $default_schema_ai = [
+            Tabs::make('Guide Layout')
+                ->tabs([
+                    Tabs\Tab::make('Основное')
+                        ->schema([
+                            Section::make('Basic Info')
+                                ->schema([
+                                    Forms\Components\TextInput::make('slug')
+                                        ->label('Slug')
+                                        ->prefix('http://re-start-x2/articles/' . $this->record->id . '-')
+                                        // ->suffix('.com')
+                                        ->suffixAction(
+                                            Action::make('generateSlug')
+                                                ->label('Generate')
+                                                ->button()
+                                                ->action(function ($livewire, callable $set) {
+                                                    $title = $livewire->data['title'] ?? null;
+                                                    if ($title) {
+                                                        $set('slug', \Str::slug($title));
+                                                    }
+                                                })
+                                        )
+                                        ->required(),
+                                    Forms\Components\TextInput::make('title')
+                                        ->label('Index Page Title')
+                                        ->reactive()
+                                        ->debounce(800)
+                                        ->afterStateUpdated(fn ($state, callable $set) =>
+                                        $set('slug', Str::slug($state))
+                                        )
+                                        ->required(),
+                                    Forms\Components\Textarea::make('description')
+                                        ->label('Index Page Description')
+                                        ->autosize()
+                                        ->required(),
+                                ])
+                                ->columns(0),
+
+                            Section::make('Hero Section')
+                                ->schema([
+                                    Forms\Components\TextInput::make('hero_title')
+                                        ->label('Hero Title'),
+                                    Forms\Components\FileUpload::make('hero_image')
+                                        ->label('Hero Image')
+                                        ->disk('public')
+                                        ->visibility('public')
+                                        ->directory(fn ($record) => "articles/{$record->id}/hero") # '/articles/hero_image'
+                                        ->image()
+                                        ->imageEditor()
+                                        ->maxSize(4096),
+                                ])
+                                ->columns(1),
+
+                            ...(($type === 'default') ? [Section::make('Content')
+                                ->schema([
+                                    Forms\Components\RichEditor::make('body')
+                                        ->toolbarButtons([
+                                            ['bold',
+                                                'italic',
+                                                'underline',
+                                                'strike',
+                                                'subscript',
+                                                'superscript',
+                                                'h2',
+                                                'h3',
+                                                'bulletList',
+                                                'orderedList',
+                                                'link',
+                                                'blockquote',],
+                                            // 'horizontalRule',
+                                            'attachFiles',
+                                            'undo',
+                                            'redo'
+                                        ])
+                                        ->fileAttachmentsDisk('public')            // какой диск использовать для хранения изображений
+                                        ->fileAttachmentsDirectory(fn ($record) => "articles/{$record->id}/body") // директория внутри диска
+                                        ->fileAttachmentsVisibility('public')      // публичная или приватная видимость
+                                        ->label('Body'),
+                                ])] : []),
+                        ]),
+
+                    Tabs\Tab::make('Itinerary')
+                        ->schema([
+                            Section::make('Itinerary Details')
+                                ->schema([
+                                    Group::make()
+                                        ->relationship('itinerary') // 👈 связь hasOne
+                                        ->schema([
+                                            Forms\Components\Textarea::make('intro')
+                                                ->label('Introduction-section Text'),
+                                            Forms\Components\TextInput::make('map_url')
+                                                ->label('Map URL')
+                                                ->url(),
+                                            Forms\Components\Repeater::make("itinerary_days.itinerary")
+                                                ->label('Days')
+                                                ->collapsible()
+                                                ->defaultItems(1)
+                                                ->addActionLabel('Add Day')
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('day')
+                                                        ->numeric()
+                                                        ->label('Day Number')
+                                                        ->required(),
+
+                                                    Forms\Components\TextInput::make('title')
+                                                        ->label('Day Title')
+                                                        ->required(),
+
+                                                    Forms\Components\Textarea::make('tip')
+                                                        ->label('Tip / Advice')
+                                                        ->rows(2),
+
+                                                    Fieldset::make('Image')
+                                                        ->schema([
+                                                            Forms\Components\TextInput::make('image.alt')
+                                                                ->columns(1)
+                                                                ->label('Alt text'),
+                                                            Forms\Components\FileUpload::make('image.src')
+                                                                ->label('Image')
+                                                                ->directory(fn ($record, $get) => "articles/{$record->article_id}/itinerary/day-{$get('day')}") # 'articles/itinerary'
+                                                                ->disk('public')
+                                                                ->visibility('public')
+                                                                ->image()
+                                                                ->imageEditor()
+                                                                ->imagePreviewHeight('120')
+                                                                ->helperText('Загрузите изображение для этого дня'),
+                                                        ]),
+
+                                                    Forms\Components\Repeater::make('activities')
+                                                        ->label('Activities')
+                                                        ->simple(
+                                                            Forms\Components\Textarea::make('activity')
+                                                                ->rows(2)
+                                                                ->label('Description')
+                                                        )
+                                                        ->collapsible()
+                                                        ->defaultItems(1),
+                                                ])
+                                                // ->grid(1)
+                                                ->columnSpanFull(),
+                                            Forms\Components\Repeater::make('trip_budget.table.rows')
+                                                ->label('Бюджет поездки')
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('Статья расходов')
+                                                        ->label('Статья расходов')
+                                                        ->required()
+                                                        ->placeholder('Проживание (3 ночи)'),
+                                                    Forms\Components\TextInput::make('Средняя стоимость')
+                                                        ->label('Средняя стоимость')
+                                                        ->placeholder('€180–250'),
+                                                ])
+                                                ->columns(2)
+                                                ->defaultItems(0)
+                                                ->addActionLabel('Добавить строку')
+                                                ->columnSpanFull(),
+                                            Forms\Components\Textarea::make('trip_budget_advice')
+                                                ->label('Trip Budget: Advice Text'),
+                                            Forms\Components\Textarea::make('results_title')
+                                                ->label('Conclusion Section: Title'),
+                                            Forms\Components\TextInput::make('results_description')
+                                                ->label('Conclusion Section: Description'),
+                                        ]),
+                                ]),
+                        ]),
+
+                    Tabs\Tab::make('SEO')
+                        ->schema([
+                            Section::make('Status')
+                                ->compact()
+                                ->schema([
+                                    Forms\Components\Toggle::make('published')
+                                        ->label('Published')
+                                        ->default(true),
+                                    Forms\Components\Toggle::make('pinned')
+                                        ->label('Pinned'),
+                                ]),
+                                // ->columns(1),
+
+                            Section::make('Tags')
+                                ->compact()
+                                ->schema([
+                                    Forms\Components\Select::make('categories')
+                                        ->label('Categories')
+                                        ->multiple()
+                                        ->preload()
+                                        ->searchable()
+                                        ->native(false)
+                                        ->relationship('categories', 'title'),
+                                ]),
+                        ]),
+                ])
+                ->columnSpanFull(),
         ];
 
 
         return $schema
             ->schema(match ($type) {
-                'itinerary' => [
-                    ...$default_schema,
-                    Section::make('Itinerary Details')
-                        ->schema([
-                            Group::make()
-                                ->relationship('itinerary') // 👈 связь hasOne
-                                ->schema([
-                                    Forms\Components\Textarea::make('intro')
-                                        ->label('Introduction-section Text'),
-                                    Forms\Components\TextInput::make('map_url')
-                                        ->label('Map URL')
-                                        ->url(),
-                                    Forms\Components\Repeater::make("itinerary_days.itinerary")
-                                        ->label('Days')
-                                        ->collapsible()
-                                        ->defaultItems(1)
-                                        ->addActionLabel('Add Day')
-                                        ->schema([
-                                            Forms\Components\TextInput::make('day')
-                                                ->numeric()
-                                                ->label('Day Number')
-                                                ->required(),
-
-                                            Forms\Components\TextInput::make('title')
-                                                ->label('Day Title')
-                                                ->required(),
-
-                                            Forms\Components\Textarea::make('tip')
-                                                ->label('Tip / Advice')
-                                                ->rows(2),
-
-                                            Fieldset::make('Image')
-                                                ->columns(2)
-                                                ->schema([
-                                                    Forms\Components\TextInput::make('image.alt')
-                                                        ->label('Alt text'),
-                                                    // ✅ загрузка изображения в JSON
-                                                    Forms\Components\FileUpload::make('image.src')
-                                                        ->label('Image')
-                                                        ->directory(fn ($record, $get) => "articles/{$record->article_id}/itinerary/day-{$get('day')}") # 'articles/itinerary'
-                                                        ->disk('public')
-                                                        ->visibility('public')
-                                                        ->image()
-                                                        ->imageEditor()
-                                                        ->imagePreviewHeight('120')
-                                                        ->helperText('Загрузите изображение для этого дня'),
-                                                ]),
-
-                                            Forms\Components\Repeater::make('activities')
-                                                ->label('Activities')
-                                                ->simple(
-                                                    Forms\Components\Textarea::make('activity')
-                                                        ->rows(2)
-                                                        ->label('Description')
-                                                )
-                                                ->collapsible()
-                                                ->defaultItems(1),
-                                        ])
-                                        ->grid(1)
-                                        ->columnSpanFull(),
-                                    Forms\Components\Repeater::make('trip_budget.table.rows')
-                                        ->label('Бюджет поездки')
-                                        ->schema([
-                                            Forms\Components\TextInput::make('Статья расходов')
-                                                ->label('Статья расходов')
-                                                ->required()
-                                                ->placeholder('Проживание (3 ночи)'),
-                                            Forms\Components\TextInput::make('Средняя стоимость')
-                                                ->label('Средняя стоимость')
-                                                ->placeholder('€180–250'),
-                                        ])
-                                        ->columns(2)
-                                        ->defaultItems(0)
-                                        ->addActionLabel('Добавить строку')
-                                        ->columnSpanFull(),
-                                    Forms\Components\Textarea::make('trip_budget_advice')
-                                        ->label('Trip Budget: Advice Text'),
-                                    Forms\Components\Textarea::make('results_title')
-                                        ->label('Conclusion Section: Title'),
-                                    Forms\Components\TextInput::make('results_description')
-                                        ->label('Conclusion Section: Description'),
-                                ]),
-                        ])
-                ],
-
-                default => $default_schema,
+                'itinerary' => $default_schema_ai,
+                default => $default_schema_ad,
             });
     }
     protected function afterSave(): void
