@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Articles;
 
+use App\Filament\Resources\Articles\Pages\ArticlePreview;
 use App\Filament\Resources\Articles\Pages\CreateArticle;
 use App\Filament\Resources\Articles\Pages\EditArticle;
 use App\Filament\Resources\Articles\Pages\ListArticles;
@@ -46,6 +47,7 @@ class ArticleResource extends Resource
             'create-blog' => Pages\CreateArticle::route('/create/default'),
             'create-itinerary' => Pages\CreateItineraryArticle::route('/create/itinerary'),
             'edit' => EditArticle::route('/{record}/edit'),
+            'preview' => ArticlePreview::route('/{record}/preview'),
         ];
     }
 }

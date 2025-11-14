@@ -9,8 +9,10 @@
         <div id="navbarNav" class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a href="#" class="nav-link active">Главная</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Маршруты</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Гиды</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">О проекте</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Направления</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Путеводители</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Блог</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Контакты</a></li>
             </ul>
         </div>
