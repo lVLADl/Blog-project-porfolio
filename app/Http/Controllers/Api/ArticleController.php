@@ -41,12 +41,18 @@ class ArticleController extends Controller
     }
     public function store(StoreArticleRequest $request): \Illuminate\Http\JsonResponse|null
     {
-        $article = $this->resource::create($request->validated());
-        $article->categories()->attach($request->input('categories'));
-        if($article->save()) {
+        $record = $this->resource::create($request->validated());
+        $record->categories()->sync($request->input('categories', []));
+        $file = $request->file('hero_image');
+        if ($file) {
+            $path = $file->store($record->hero_image_dir, 'public');
+            $record->hero_image = $path;
+            // $record->force(['hero_image' => $newPath])->save();
+        }
+        if($record->save()) {
             return response()->json([
                 'message' => 'Record created successfully.',
-                'data' => $article
+                'data' => $record
             ], 201);
         }
 
