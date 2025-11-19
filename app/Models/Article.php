@@ -26,6 +26,16 @@ class Article extends Model
 
 
 
+    public function getBodyImagesDirAttribute(): string
+    {
+        $bodyDir = "articles/{$this->id}/body";
+        return $bodyDir;
+    }
+    public function getHeroImageDirAttribute(): string
+    {
+        $heroDir = "articles/{$this->id}/hero";
+        return $heroDir;
+    }
 
     public function getHeroImageUrlAttribute(): string
     {
